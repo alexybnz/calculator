@@ -1,0 +1,148 @@
+// console.log(operate(3, '-', 5));
+const digits = document.querySelectorAll('[data-value]:not(.operbtn)');
+const operators = document.querySelectorAll('.operbtn:not(#equals)');
+const display = document.getElementById('display');
+const clearBtn = document.getElementById('clear');
+const backspaceBtn = document.getElementById('backspace');
+const equalsBtn = document.getElementById('equals');
+
+function add(a, b) {
+  return a + b;
+}
+
+function subtract(a, b) {
+  return a - b;
+}
+
+function multiply(a, b) {
+  return a * b;
+}
+
+function divide(a, b) {
+  if (b === 0) {
+    return 'Error: Division by zero';
+  }
+  return a / b;
+}
+
+function operate(num1, operator, num2) {
+  switch (operator) {
+    case '+':
+      return add(num1, num2);
+    case '-':
+      return subtract(num1, num2);
+    case '*':
+      return multiply(num1, num2);
+    case '/':
+      return divide(num1, num2);
+    default:
+      return 'Invalid operator';
+  }
+}
+
+digits.forEach((button) => {
+  button.addEventListener('click', () => {
+    const value = button.getAttribute('data-value');
+
+    if (display.textContent.includes('.') && value === '.') {
+      return;
+    }
+
+    if (
+      display.textContent === '0' ||
+      justCalculated ||
+      display.textContent === 'Error: Division by zero'
+    ) {
+      display.textContent = value;
+      justCalculated = false;
+    } else {
+      display.textContent += value;
+    }
+  });
+});
+
+operators.forEach((button) => {
+  button.addEventListener('click', () => {
+    const value = button.getAttribute('data-value');
+
+    if (operator !== '' && !justCalculated) {
+      const result = operate(num1, operator, parseFloat(display.textContent));
+      display.textContent = result;
+      num1 = result;
+    } else {
+      num1 = parseFloat(display.textContent);
+    }
+
+    operator = value;
+    justCalculated = true;
+  });
+});
+
+equalsBtn.addEventListener('click', () => {
+  if (operator === '' || display.textContent === 'Error: Division by zero') {
+    return;
+  }
+
+  const result = operate(num1, operator, parseFloat(display.textContent));
+
+  if (typeof result === 'string') {
+    display.textContent = result;
+    return;
+  }
+
+  if (result % 1 === 0) {
+    display.textContent = result;
+  } else {
+    display.textContent = result.toFixed(4);
+  }
+
+  num1 = result;
+  justCalculated = true;
+});
+
+clearBtn.addEventListener('click', () => {
+  display.textContent = '0';
+  num1 = 0;
+  operator = '';
+  num2 = 0;
+  justCalculated = false;
+});
+
+backspaceBtn.addEventListener('click', () => {
+  if (display.textContent.length > 1) {
+    display.textContent = display.textContent.slice(0, -1);
+  } else {
+    display.textContent = '0';
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key >= '0' && e.key <= '9') {
+    const targetButton = Array.from(digits).find(
+      (btn) => btn.getAttribute('data-value') === e.key
+    );
+    if (targetButton) {
+      targetButton.click();
+    }
+  } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+    const targetButton = Array.from(operators).find(
+      (btn) => btn.getAttribute('data-value') === e.key
+    );
+    if (targetButton) {
+      targetButton.click();
+    }
+  } else if (e.key === 'Enter' || e.key === '=') {
+    equalsBtn.click();
+  } else if (e.key === 'Backspace') {
+    backspaceBtn.click();
+  } else if (e.key === '.') {
+    const targetButton = Array.from(digits).find(
+      (btn) => btn.getAttribute('data-value') === e.key
+    );
+    if (targetButton) {
+      targetButton.click();
+    }
+  } else if (e.key === 'c' || e.key === 'C') {
+    clearBtn.click();
+  }
+});
