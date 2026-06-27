@@ -58,7 +58,3 @@ One of the biggest challenges was managing the calculator's state while handling
 - Add calculation history
 - Implement dark/light mode toggle
 - Improve accessibility features
-
-## License
-
-This project is open source and available under the MIT License.
